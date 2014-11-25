@@ -15,7 +15,6 @@ def gather() :
     gevent.spawn(headset.setup)
     gevent.sleep(0)
 
-
     packets = 0
     now = datetime.now()
     filename = str(now.time()) + "_" + str(now.date())
@@ -33,6 +32,7 @@ def gather() :
 
     print "Training will start in..."; sleep(1); print "3..."; sleep(1); print "2..."; sleep(1); print "1..."; sleep(1); print "Focus!"
 
+    qualities = []
     timeout = time() + 12
     while True:
         if time() > timeout :
@@ -46,7 +46,14 @@ def gather() :
 
     headset.close()
 
+    quality = 0.
     f = open("./data/" + filename,'w')
+    columns = []
+    for name in names :
+        columns.append(str(name))
+        columns.append('Q' + str(name))
+    f.write(','.join(columns))
+    f.write('\n')
     while packets > 0 :
         for buffer in buffers :
             f.write( buffer.pop() )
@@ -55,23 +62,36 @@ def gather() :
 
     f.close()
 
+
+    print "Finished reading, saved to file %s" % filename
+    for buffer in buffers :
+        print "Sensor %s mean quality: %.2f" % (buffer.name, buffer.mean_quality())
+
+
 class sensor_buffer :
 
     def __init__(self, name) :
 
         self.name = name
         self.buffer = []
+        self.sum_quality = 0.
+        self.n_readings = 0
 
     def update(self, packet) :
 
         if len(self.buffer) > BUFFER_CAPACITY :
             raise Exception('Buffer overflow')
         self.buffer.append( [packet.sensors[self.name]['value'], packet.sensors[self.name]['quality']] )
+        self.sum_quality += int(packet.sensors[self.name]['quality'])
+        self.n_readings += 1
 
     def pop(self) :
         # if len( self.buffer > 0 ) :
         data = self.buffer.pop()
-        return self.name + ":" + str( reading(data) ) + ";"
+        return str( reading(data) )
+
+    def mean_quality(self) :
+        return self.sum_quality / self.n_readings
 
 class reading :
 
@@ -81,4 +101,4 @@ class reading :
         self.quality = data[1]
 
     def __repr__(self) :
-        return "%i,%.1f" % ( self.value, self.quality )
+        return "%i,%.1f," % ( self.value, self.quality )

@@ -1,0 +1,10 @@
+device:	Emotiv Epoc (not epoc+) - https://emotiv.com/epoc.php
+data: 	5 classes, labeled 0,1,2,3,4.
+	files in./data/
+	each file is a 8 second reading for one class, last character of the filename indicates class
+	cvs format, column names in 1st row, those names follow a rule:
+		<1_electrod_name>, Q<1_electrod_name>, <2_electrod_name>, Q<2_electrod_name>, ...
+		where one column is the actual reading, the following is quality of that reading
+
+other: 	sensor location - https://github.com/bschumacher/emokit-old/wiki/Sensor-Locations
+	library github - https://github.com/openyou/emokit

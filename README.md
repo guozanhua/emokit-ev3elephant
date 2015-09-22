@@ -1,6 +1,4 @@
-Individual Project 2014
+emokit-ev3elephant
 ========
 
-Repository for Individual Project for winter 2014.
-
-[Wiki](https://github.com/igorsieradzki/ip2014igorsieradzki/wiki)
+python-java interface for controlling EV3 brick with emotive epoc
